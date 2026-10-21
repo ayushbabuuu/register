@@ -1,0 +1,221 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yard Details</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #4338ca, #7c3aed);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px #0003;
+        }
+
+        .logo {
+            display: block;
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin: 0 auto 15px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #312e81;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            color: #334155;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 15px;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px #e0e7ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 9px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        #message {
+            color: #dc2626;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 18px 20px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="card">
+
+        <img src="OIP.webp" alt="Logo" class="logo">
+
+        <hr>
+
+        <h2>Yard Details</h2>
+
+        <form id="yardForm">
+
+            <label for="yardNumber">Yard Number</label>
+            <input
+                type="text"
+                id="yardNumber"
+                name="yardNumber"
+                placeholder="Enter Yard Number"
+                inputmode="numeric"
+                maxlength="19"
+                pattern="[0-9]{4}( [0-9]{4}){3}"
+                title="Enter 16 digits in groups of four"
+                required>
+
+            <label for="expiry">Expiry Date (MM/YY)</label>
+            <input
+                type="text"
+                id="expiry"
+                name="expiry"
+                placeholder="MM/YY"
+                inputmode="numeric"
+                maxlength="5"
+                pattern="(0[1-9]|1[0-2])/[0-9]{2}"
+                title="Enter date in MM/YY format"
+                required>
+
+            <label for="reference">Reference Number</label>
+            <input
+                type="text"
+                id="reference"
+                name="reference"
+                placeholder="Enter 10-digit Reference Number"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                minlength="10"
+                required
+                title="Please enter exactly 10 digits">
+
+            <button type="submit">Proceed</button>
+
+            <p id="message" role="status" aria-live="polite"></p>
+
+        </form>
+
+    </main>
+
+    <script>
+        const yardForm = document.getElementById("yardForm");
+        const yardNumber = document.getElementById("yardNumber");
+        const expiry = document.getElementById("expiry");
+        const reference = document.getElementById("reference");
+        const message = document.getElementById("message");
+
+        // Yard Number: har 4 digits ke baad space
+        yardNumber.addEventListener("input", function () {
+            const digits = this.value
+                .replace(/\D/g, "")
+                .slice(0, 16);
+
+            this.value =
+                digits.match(/.{1,4}/g)?.join(" ") || "";
+        });
+
+        // Expiry Date: MM/YY, automatic slash
+        expiry.addEventListener("input", function () {
+            const digits = this.value
+                .replace(/\D/g, "")
+                .slice(0, 4);
+
+            if (digits.length > 2) {
+                this.value =
+                    digits.slice(0, 2) + "/" +
+                    digits.slice(2);
+            } else {
+                this.value = digits;
+            }
+        });
+
+        // Reference Number: sirf 10 digits
+        reference.addEventListener("input", function () {
+            this.value = this.value
+                .replace(/\D/g, "")
+                .slice(0, 10);
+        });
+
+        yardForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            message.textContent = "";
+
+            if (!yardForm.checkValidity()) {
+                yardForm.reportValidity();
+                return;
+            }
+
+            // Sabhi validations pass hone par next page
+            window.location.href = "final.html";
+        });
+    </script>
+
+</body>
+</html>
+```
