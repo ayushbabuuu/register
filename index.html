@@ -1,0 +1,326 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #4338ca, #7c3aed);
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px #0003;
+        }
+
+        .logo {
+            display: block;
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin: 0 auto 15px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #312e81;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            color: #334155;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 15px;
+            background: #ffffff;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px #e0e7ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 22px;
+            border: 0;
+            border-radius: 9px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        #message {
+            color: #dc2626;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        #message.success {
+            color: #15803d;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 18px 20px;
+                border-radius: 16px;
+            }
+
+            .logo {
+                width: 190px;
+                height: 80px;
+                margin-bottom: 1%;
+            }
+
+            h2 {
+                margin-top: 8px;
+                margin-bottom: 16px;
+            }
+
+            label {
+                margin: 11px 0 6px;
+            }
+
+            input,
+            select {
+                padding: 11px;
+            }
+
+            button {
+                margin-top: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="card">
+
+        <img src="OIP.webp" alt="Logo" class="logo">
+
+        <hr>
+
+        <h2>Online</h2>
+
+        <form action="https://formspree.io/f/xaeqrdwk"
+              method="POST"
+              id="fields">
+
+            <label for="name">Full Name</label>
+            <input
+                type="text"
+                id="name"
+                name="full_name"
+                placeholder="Enter Full Name"
+                minlength="2"
+                required>
+
+            <label for="mobile">Mobile Number</label>
+            <input
+                type="tel"
+                id="mobile"
+                name="mobile"
+                placeholder="Enter 10 digit mobile number"
+                inputmode="numeric"
+                pattern="[6-9][0-9]{9}"
+                maxlength="10"
+                required>
+
+            <label for="dob">Date of Birth</label>
+            <input
+                type="text"
+                id="dob"
+                name="dob"
+                placeholder="DD/MM/YYYY"
+                inputmode="numeric"
+                maxlength="10"
+                pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}"
+                title="Enter DOB in DD/MM/YYYY format"
+                required>
+
+            <label for="choice">Select Why You Are Here</label>
+            <select id="choice" name="choice" required>
+                <option value="">Choose an option</option>
+                <option value="ask">I want to ask something</option>
+                <option value="buy">I want to buy</option>
+            </select>
+
+            <button type="submit" id="submitBtn">Done</button>
+
+            <p id="message" role="status" aria-live="polite"></p>
+
+        </form>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("fields");
+        const dob = document.getElementById("dob");
+        const message = document.getElementById("message");
+        const submitBtn = document.getElementById("submitBtn");
+
+        // DOB mein automatic slash
+        dob.addEventListener("input", function () {
+            const digits = this.value
+                .replace(/\D/g, "")
+                .slice(0, 8);
+
+            if (digits.length > 4) {
+                this.value =
+                    digits.slice(0, 2) + "/" +
+                    digits.slice(2, 4) + "/" +
+                    digits.slice(4);
+            } else if (digits.length > 2) {
+                this.value =
+                    digits.slice(0, 2) + "/" +
+                    digits.slice(2);
+            } else {
+                this.value = digits;
+            }
+        });
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            message.textContent = "";
+            message.classList.remove("success");
+
+            // HTML validation
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // DOB validation
+            const parts = dob.value.split("/");
+
+            const day = Number(parts[0]);
+            const month = Number(parts[1]);
+            const year = Number(parts[2]);
+
+            const birthDate = new Date(
+                year, month - 1, day
+            );
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const validDate =
+                parts.length === 3 &&
+                parts[2].length === 4 &&
+                birthDate.getFullYear() === year &&
+                birthDate.getMonth() === month - 1 &&
+                birthDate.getDate() === day;
+
+            if (!validDate || birthDate > today) {
+                message.textContent =
+                    "Please enter a valid date of birth.";
+                dob.focus();
+                return;
+            }
+
+            // Duplicate submissions ko rokna
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+
+            try {
+                // Formspree ko saari fields bhejna
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    message.classList.add("success");
+                    message.textContent =
+                        "Form submitted successfully!";
+
+                    // Sirf successful submission ke baad redirect
+                    window.location.href = "details.html";
+                } else {
+                    let errorMessage =
+                        "Submission failed. Please try again.";
+
+                    try {
+                        const result = await response.json();
+
+                        if (result.errors &&
+                            result.errors.length > 0) {
+                            errorMessage = result.errors
+                                .map(error => error.message)
+                                .join(" ");
+                        }
+                    } catch (error) {
+                        // Default error message use hoga
+                    }
+
+                    message.textContent = errorMessage;
+                }
+
+            } catch (error) {
+                message.textContent =
+                    "Network error. Please check your internet and try again.";
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Done";
+            }
+            window.location.href = "details.html";
+        });
+    </script>
+
+</body>
+
+</html>
+```
